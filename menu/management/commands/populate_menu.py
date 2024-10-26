@@ -1,23 +1,51 @@
 import random
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 from faker import Faker
+from faker_food import FoodProvider
 from menu.models import MenuItem, Category
 
 class Command(BaseCommand):
     help = 'Заполняет базу данных тестовыми блюдами'
 
+    def add_arguments(self, parser: CommandParser) -> None:
+        parser.add_argument(
+            '--clear',
+            action='store_true',
+            help='Очистить базу перед заполнением (по умолчанию: False)',
+        )
+        parser.add_argument(
+            '--count',
+            type=int,
+            default=50,
+            help='Количество генерируемых блюд (по умолчанию: 100)'
+        )
+        parser.add_argument(
+            '--price-step',
+            type=int,
+            default=50,
+            help='Шаг генерации цены (по умолчанию: 50)'
+        )
+    
     def handle(self, *args, **kwargs):
-        fake = Faker('ru_RU')  # Используем русский язык для генерации
+        clear_database = kwargs['clear']
+        count = kwargs['count']
+        price_step = kwargs['price_step']
+        
+        if clear_database:
+            MenuItem.objects.all().delete()
+            self.stdout.write(self.style.SUCCESS('База данных очищена'))
+            
+        fake = Faker('ru_RU')
+        fake.add_provider(FoodProvider)
 
         categories = [Category.HOT.value, Category.SOUP.value, Category.DESSERT.value, Category.SALAD.value, Category.DRINK.value]
 
-        # Создание 100 блюд
-        for _ in range(100):
+        for _ in range(count):
             MenuItem.objects.create(
-                name=fake.word().capitalize(),  # Случайное название
-                description=fake.sentence(nb_words=10),  # Описание из 10 слов
-                category=random.choice(categories),  # Случайная категория
-                price=round(random.uniform(10, 500), 2)  # Случайная цена от 10 до 500
+                name=fake.dish(), 
+                description=fake.dish_description(),
+                category=random.choice(categories),
+                price=round(random.randrange(250, 4501, price_step))
             )
 
         self.stdout.write(self.style.SUCCESS('База данных успешно заполнена тестовыми блюдами'))
