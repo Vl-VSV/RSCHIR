@@ -42,5 +42,7 @@ urlpatterns = [
 
     path('auth/', include('core.urls')),
     
-    path('menu/', include('menu.urls'))
+    path('menu/', include('menu.urls')),
+    
+    path('cart/', include('cart.urls'))
 ]

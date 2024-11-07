@@ -19,7 +19,7 @@ class MenuItemListView(generics.ListAPIView):
         'price': ['gte', 'lte'],  # Диапазон цены (>= и <=)
     }
     ordering_fields = ['name', 'price']  # Позволяет сортировку по имени и цене
-    search_fields = ['name', 'description']  # Поиск по имени и описанию
+    search_fields = ['nameч', 'description']  # Поиск по имени и описанию
 
     @swagger_auto_schema(
         manual_parameters=[
