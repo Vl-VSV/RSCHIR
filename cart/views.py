@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from cart.models import Cart, CartItem
 from menu.models import MenuItem
-from cart.serializers import CartSerializer, CartItemSerializer
+from cart.serializers import CartSerializer, AddCartItemSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -37,6 +37,7 @@ class AddCartItemView(generics.CreateAPIView):
     Add a MenuItem to the cart by its ID, with an optional quantity.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class=AddCartItemSerializer
 
     quantity_param = openapi.Parameter(
         'quantity', openapi.IN_QUERY, description="Количество добавляемого товара", type=openapi.TYPE_INTEGER, default=1
